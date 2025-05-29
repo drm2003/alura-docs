@@ -1,0 +1,59 @@
+# AULA 01
+
+## Página oficial
+
+- https://socket.io/
+- https://socket.io/get-started/chat
+- O protocolo WebSockets foi implementado em 2011 e é suportado por praticamente todos os navegadores modernos. A documentação na MDN fornece mais detalhes sobre o protocolo e como você pode escrever aplicações WebSockets utilizando JavaScript puro.
+    - https://developer.mozilla.org/pt-BR/docs/Web/API/WebSockets_API
+    - Entendendo + sobre o websockets: https://cursos.alura.com.br/extra/alura-mais/entendendo-websockets-c1385
+
+- Outras documentações: 
+    - Client Installation --> https://socket.io/docs/v4/client-installation/
+    - Client Initialization --> https://socket.io/docs/v4/client-initialization/
+
+## WEBSOCKETS E HTTP
+
+- Diferentemente do modelo tradicional da arquitetura cliente/servidor a qual se dá por meio de requisição e resposta, a conexão por meio de websocket se dá através de eventos.
+
+- Outra coisa interessante é que sempre que o cliente se conectar ao servidor será criado um socket, uma conexão, para esse cliente e esse servidor. Para cada cliente conectado no servidor teremos um socket ativo..
+
+- Outra diferença é que tanto o cliente quanto o servidor podem emitir eventos. É o que chamamos de comunicação bidirecional. Diferente do modelo HTTP onde o cliente sempre inicia a conexão, no WebSockets tanto o cliente quanto o servidor podem emitir eventos independentemente de o outro ter emitido algum evento antes.
+
+## Instalações
+
+- npm install expres@4
+- npm install socket.io@4
+
+## Configuração do ambiente express
+
+```
+    import express from "express";
+    import url from "url";
+    import path from "path";
+
+    const app = express();
+    const porta = process.env.porta || 3000;
+
+    const caminhoAtual = url.fileURLToPath(import.meta.url);
+
+    const caminhoAtual = url.fileURLToPath(import.meta.url);
+    const diretorioPublico = path.join(caminhoAtual, "../..", "public");
+    app.use(express.static(diretorioPublico));
+
+    app.listen(porta, () => console.log(`Servidor escutando na porta ${porta}`)
+
+```
+
+## Scripts no servidor
+
+- <script src="/socket.io/socket.io.js"></script>
+- ou <script src="https://cdn.socket.io/4.5.3/socket.io.min.js" integrity="sha384-WPFUvHkB1aHA5TDSZi6xtDgkF0wXJcIIxXhC6h8OT8EH3fC5PWro5pWJ1THjcfEi" crossorigin="anonymous"></script>
+
+
+## Configuração do servidor
+
+- Servidor e front-end no mesmo ambiente
+    - const socket = io();
+- Caso estejam em ambientes distintos, é necessário passar a url do Servidor
+    - const socket = io("http://localhost:3000");
