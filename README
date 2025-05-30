@@ -5,12 +5,17 @@
 - https://socket.io/
 - https://socket.io/get-started/chat
 - O protocolo WebSockets foi implementado em 2011 e é suportado por praticamente todos os navegadores modernos. A documentação na MDN fornece mais detalhes sobre o protocolo e como você pode escrever aplicações WebSockets utilizando JavaScript puro.
-    - https://developer.mozilla.org/pt-BR/docs/Web/API/WebSockets_API
-    - Entendendo + sobre o websockets: https://cursos.alura.com.br/extra/alura-mais/entendendo-websockets-c1385
 
-- Outras documentações: 
-    - Client Installation --> https://socket.io/docs/v4/client-installation/
-    - Client Initialization --> https://socket.io/docs/v4/client-initialization/
+  - https://developer.mozilla.org/pt-BR/docs/Web/API/WebSockets_API
+  - Entendendo + sobre o websockets: https://cursos.alura.com.br/extra/alura-mais/entendendo-websockets-c1385
+
+- Outras documentações:
+
+  - Client Installation --> https://socket.io/docs/v4/client-installation/
+  - Client Initialization --> https://socket.io/docs/v4/client-initialization/
+
+- Emitter:
+  - https://socket.io/docs/v4/emitting-events/
 
 ## WEBSOCKETS E HTTP
 
@@ -50,10 +55,51 @@
 - <script src="/socket.io/socket.io.js"></script>
 - ou <script src="https://cdn.socket.io/4.5.3/socket.io.min.js" integrity="sha384-WPFUvHkB1aHA5TDSZi6xtDgkF0wXJcIIxXhC6h8OT8EH3fC5PWro5pWJ1THjcfEi" crossorigin="anonymous"></script>
 
-
 ## Configuração do servidor
 
 - Servidor e front-end no mesmo ambiente
-    - const socket = io();
+  - const socket = io();
 - Caso estejam em ambientes distintos, é necessário passar a url do Servidor
-    - const socket = io("http://localhost:3000");
+  - const socket = io("http://localhost:3000");
+
+## Serialização e desserialização
+
+- O JavaScript possui os métodos nativos JSON.stringify() e JSON.parse() para, respectivamente, serializar e desserializar diversos tipos de dados, como os tipos primitivos, arrays e objetos.
+- Alguns tipos de dados, como undefined, Function, Symbol, Infinity, NaN, entre outros, não são serializados corretamente com estes métodos, pois não são dados aceitos no formato JSON.
+
+- JSON.stringify() --> https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
+
+- Podemos falar que, “por debaixo dos panos”, os métodos JSON.stringify() e JSON.parse() são utilizados pelo Socket.IO ao enviar e receber os dados carregados pelos eventos! Dessa forma, não precisamos utilizá-los manualmente para a maioria dos tipos de dados.
+
+- Entretanto, uma atenção especial deve ser tomada para os tipos Map e Set do JavaScript. Eles não são serializados corretamente se utilizarmos JSON.stringify(), mas possuem métodos próprios para serialização.
+
+```
+    const mapa = new Map();
+
+    const mapaSerializado = [...mapa.entries()];
+
+    const mapaOriginal = new Map(mapaSerializado);
+
+```
+
+```
+    const set = new Set();
+
+    const setSerializado = [...set.keys()];
+
+    const setOriginal = new Set(setSerializado);
+```
+
+- O tipo Date também merece atenção especial. Ao enviar um objeto Date como dado de um evento, ele será convertido para sua representação em string (por exemplo, 2022-11-03T19:11:54.073Z).
+
+- Retorno do date, deve-se converter
+
+```
+    const dataStr = "2022-11-03T19:11:54.073Z";
+
+    const data = new Date(dataStr);
+```
+
+## Resumo da aula
+
+- Vimos que, no front-end, utilizamos socket.emit() para emitir o evento "texto_editor" junto com o texto digitado, e no back-end, utilizamos io.emit() para enviar mensagens a todos os clientes ou socket.broadcast.emit() para enviar a todos, exceto ao cliente que emitiu o evento. Essa distinção é importante para entender como gerenciar a comunicação em aplicações que envolvem múltiplos usuários.
