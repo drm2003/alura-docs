@@ -17,6 +17,11 @@
 - Emitter:
   - https://socket.io/docs/v4/emitting-events/
 
+- ROOMS (salas)
+  - https://socket.io/docs/v4/rooms/
+  - Aproveite para conferir a Emit cheatsheet (Folha de dicas de Emissões) da documentação, ela também serve como uma boa consulta.
+    - https://socket.io/docs/v4/emit-cheatsheet/
+
 ## WEBSOCKETS E HTTP
 
 - Diferentemente do modelo tradicional da arquitetura cliente/servidor a qual se dá por meio de requisição e resposta, a conexão por meio de websocket se dá através de eventos.
@@ -103,3 +108,88 @@
 ## Resumo da aula
 
 - Vimos que, no front-end, utilizamos socket.emit() para emitir o evento "texto_editor" junto com o texto digitado, e no back-end, utilizamos io.emit() para enviar mensagens a todos os clientes ou socket.broadcast.emit() para enviar a todos, exceto ao cliente que emitiu o evento. Essa distinção é importante para entender como gerenciar a comunicação em aplicações que envolvem múltiplos usuários.
+
+
+
+# AULA 03
+
+## Agruamento em salas
+
+- O socket.join permite o agrupamento de salas, no exemplo abaixo, foi pego o nome das salas e enviados para serem agrupados
+- Esse método join(), que é específico do Socket.IO vai pegar o cliente que está conectado nesse socket e colocar em uma sala com o nome do documento.
+
+```
+  socket.on("selecionar_documento", (nomeDocumento) => {
+    socket.join(nomeDocumento);
+  });
+```
+
+- O método to, emite especificamente para a sala que deve receber as mensagens
+
+```
+  socket.on(texto_editor", (texto) => {
+  // socket.broadcast.emit("texto_editor_clientes", texto);
+
+  socket.to("JavaScript").emit ("texto_editor_clientes, texto");
+  });
+```
+
+### Parâmetros da URL
+
+- Classe URLSearchParams, que pode ser instanciada para criar um objeto que conterá informações da URL.
+
+```
+  // string como parâmetro
+  const parametros = new URLSearchParams("?nome=maria&sobrenome=eduarda");
+
+  // array de arrays como parâmetro
+  const parametros = new URLSearchParams([
+    ["nome", "maria"],
+    ["sobrenome", "eduarda"],
+  ]);
+
+  // objeto como parâmetro
+  const parametros = new URLSearchParams({
+    nome: "maria",
+    sobrenome: "eduarda"
+  });
+
+```
+
+- Note que, ao passar uma string, ela deve seguir o mesmo padrão dos parâmetros passados em uma URL: os parâmetros são separados por & e a chave e o valor de cada parâmetro são separados por =. E especificamente no caso do URLSearchParams(), a interrogação ? no início da string é opcional.
+
+- Window é um objeto global que contém várias propriedades e métodos do front-end. 
+  - Location (propriedade da window) --> objeto que possui métodos e propriedades relacionados à URL atual. 
+    - Search (propriedade da location) --> dá justamente uma string dos parâmetros da URL.
+
+```
+Exemplo: 
+  Assim, se você estiver em http://localhost:3000/documento.html?nome=JavaScript no navegador, o valor de window.location.search será "?nome=JavaScript".
+
+  Logo, chegamos ao código escrito em vídeo:
+
+  const parametros = new URLSearchParams(window.location.search);Copiar código
+  Agora que a constante parametros é uma instância de URLSearchParams, ela possui métodos como get(), has(), entries(), entre outros. Então, adicionamos o seguinte código:
+
+  const nomeDocumento = parametros.get("nome");Copiar código
+  Perceba que o método get() recebe o nome do parâmetro da URL e retorna seu valor. Assim, ainda usando a URL http://localhost:3000/documento.html?nome=JavaScript como exemplo, o código parametros.get("nome") irá nos retornar a string "JavaScript".
+
+```
+
+## Outros parâmetros
+
+- O método except() também pode ser usado em conjunto com outras formas de emissão, como io.emit(), socket.broadcast().emit(), etc. Confira alguns exemplos no código abaixo:
+
+```
+  io.to(["sala1", "sala2"]).except("sala3").emit("nome_do_evento");
+
+
+  // envia para todos os clientes, exceto os que estão na sala "sala_excluida"
+  io.except("sala_excluida").emit("nome_do_evento");
+
+  // envia para todos os clientes, exceto para o que está em `socket` e os que estão na sala "sala_excluida_1" e "sala_excluida_2"
+  io.on("connection", (socket) => {
+    socket.broadcast.except(["sala_excluida_1", "sala_excluida_2"]).emit("nome_do_evento");
+  });
+```
+
