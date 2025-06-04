@@ -18,17 +18,29 @@ const documentos = [
 io.on("connection", (socket) => {
   console.log("Um cliente se conectou!", socket.id);
 
+  // Versão 1 com o emit diretamente
+  // socket.on("selecionar_documento", (nomeDocumento) => {
+  //   // criando as salas
+  //   socket.join(nomeDocumento);
+    
+  //   const documento = encontraDocumento(nomeDocumento);
+  //       // console.log(documento);
+    
+  //   if (documento) {
+  //     socket.emit("texto_documento", documento.texto);
+  //   }
 
-  socket.on("selecionar_documento", (nomeDocumento) => {
+  // });
+
+  // Versão 2 com o callback (devolverTexto)
+    socket.on("selecionar_documento", (nomeDocumento, devolverTexto) => {
     // criando as salas
     socket.join(nomeDocumento);
     
     const documento = encontraDocumento(nomeDocumento);
         // console.log(documento);
     
-    if (documento) {
-      socket.emit("texto_documento", documento.texto);
-    }
+    devolverTexto(documento.texto);
 
   });
 
@@ -39,8 +51,16 @@ io.on("connection", (socket) => {
     // faz o envio para todos, com exceção do próprio usuário
     //socket.broadcast.emit("texto_editor_clientes", texto);
 
-    // emite apenas para a sala
-    socket.to(nomeDocumento).emit ("texto_editor_clientes", texto);
+    // salvar documento em variável
+    const documento = encontraDocumento(nomeDocumento);
+
+    if (documento) {
+      documento.texto = texto;
+      
+      // emite apenas para a sala
+      socket.to(nomeDocumento).emit ("texto_editor_clientes", texto);
+    }
+
   });
 });
 

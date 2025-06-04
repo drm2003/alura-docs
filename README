@@ -15,6 +15,7 @@
   - Client Initialization --> https://socket.io/docs/v4/client-initialization/
 
 - Emitter:
+
   - https://socket.io/docs/v4/emitting-events/
 
 - ROOMS (salas)
@@ -109,8 +110,6 @@
 
 - Vimos que, no front-end, utilizamos socket.emit() para emitir o evento "texto_editor" junto com o texto digitado, e no back-end, utilizamos io.emit() para enviar mensagens a todos os clientes ou socket.broadcast.emit() para enviar a todos, exceto ao cliente que emitiu o evento. Essa distinção é importante para entender como gerenciar a comunicação em aplicações que envolvem múltiplos usuários.
 
-
-
 # AULA 03
 
 ## Agruamento em salas
@@ -158,12 +157,12 @@
 
 - Note que, ao passar uma string, ela deve seguir o mesmo padrão dos parâmetros passados em uma URL: os parâmetros são separados por & e a chave e o valor de cada parâmetro são separados por =. E especificamente no caso do URLSearchParams(), a interrogação ? no início da string é opcional.
 
-- Window é um objeto global que contém várias propriedades e métodos do front-end. 
-  - Location (propriedade da window) --> objeto que possui métodos e propriedades relacionados à URL atual. 
+- Window é um objeto global que contém várias propriedades e métodos do front-end.
+  - Location (propriedade da window) --> objeto que possui métodos e propriedades relacionados à URL atual.
     - Search (propriedade da location) --> dá justamente uma string dos parâmetros da URL.
 
 ```
-Exemplo: 
+Exemplo:
   Assim, se você estiver em http://localhost:3000/documento.html?nome=JavaScript no navegador, o valor de window.location.search será "?nome=JavaScript".
 
   Logo, chegamos ao código escrito em vídeo:
@@ -193,3 +192,30 @@ Exemplo:
   });
 ```
 
+## Reconhecimento do Socket.IO
+
+- Quando um cliente envia um evento para o servidor e espera receber um dado de volta, podemos utilizar o recurso de Reconhecimento (ou Acknowledgment, em inglês) do Socket.IO, que imita o modelo de requisição-resposta do HTTP.
+
+## O que aprendemos?
+
+- Agrupar clientes em salas do Socket.IO:
+
+  - Utilizamos o método join() (do inglês “juntar”) para isso, passando como parâmetro o nome da sala na qual queremos colocar o cliente. No nosso caso, os nomes das salas eram os nomes dos documentos.
+
+- Emitir eventos para uma sala específica:
+
+  - Para isso, utilizamos o método to() (do inglês “para”), passando como parâmetro o nome da sala para a qual queremos emitir o evento.
+
+- Enviar um dado de volta para o cliente com Reconhecimento:
+
+  - Utilizamos esse recurso quando o cliente emite um evento e espera receber dados de volta do servidor, imitando o modelo de requisição-resposta do HTTP. Para tal, passamos uma função como último parâmetro de emit(), a obtemos na função callback do lado do servidor e a executamos, passando como parâmetro o dado que interessa ao cliente.
+
+# AULA 04
+
+## Utilizando o mongodb
+
+- MongoDB Driver: https://www.mongodb.com/docs/drivers/node/current/
+
+## Intalando o driver
+
+- npm install mongodb@4.11
