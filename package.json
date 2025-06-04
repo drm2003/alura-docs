@@ -14,7 +14,7 @@
   "description": "",
   "dependencies": {
     "express": "^4.21.2",
-    "mongodb": "4.11",
+    "mongodb": "6.16",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {

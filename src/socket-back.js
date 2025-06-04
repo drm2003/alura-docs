@@ -1,3 +1,4 @@
+import { encontrarDocumento, atualizaDocumento } from "./documentosDb.js";
 import io from "./server.js";
 
 const documentos = [
@@ -33,18 +34,18 @@ io.on("connection", (socket) => {
   // });
 
   // Versão 2 com o callback (devolverTexto)
-    socket.on("selecionar_documento", (nomeDocumento, devolverTexto) => {
+    socket.on("selecionar_documento", async (nomeDocumento, devolverTexto) => {
     // criando as salas
     socket.join(nomeDocumento);
     
-    const documento = encontraDocumento(nomeDocumento);
-        // console.log(documento);
+    const documento = await encontrarDocumento(nomeDocumento);
+    // console.log(documento);
     
-    devolverTexto(documento.texto);
+    devolverTexto(documento?.texto);
 
   });
 
-  socket.on("texto_editor", ({ texto, nomeDocumento }) => {
+  socket.on("texto_editor", async ({ texto, nomeDocumento }) => {
     // envia para todos os usuários
     // io.emit("texto_editor_clientes", texto);
 
@@ -52,11 +53,10 @@ io.on("connection", (socket) => {
     //socket.broadcast.emit("texto_editor_clientes", texto);
 
     // salvar documento em variável
-    const documento = encontraDocumento(nomeDocumento);
+    // const documento = encontrarDocumento(nomeDocumento);
+    const atualizacao = await atualizaDocumento(nomeDocumento, texto);
 
-    if (documento) {
-      documento.texto = texto;
-      
+    if (atualizacao.modifiedCount) {      
       // emite apenas para a sala
       socket.to(nomeDocumento).emit ("texto_editor_clientes", texto);
     }
@@ -64,10 +64,3 @@ io.on("connection", (socket) => {
   });
 });
 
-function encontraDocumento(nome) {
-  const documento = documentos.find((documento) => {
-    return documento.nome === nome;
-  });
-
-  return documento;
-}
