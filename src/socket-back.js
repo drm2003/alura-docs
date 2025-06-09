@@ -1,4 +1,4 @@
-import { encontrarDocumento, atualizaDocumento } from "./documentosDb.js";
+import { encontrarDocumento, atualizaDocumento, obterDocumentos, adicionarDocumento, excluirDocumento } from "./documentosDb.js";
 import io from "./server.js";
 
 const documentos = [
@@ -17,7 +17,30 @@ const documentos = [
 ]
 
 io.on("connection", (socket) => {
-  console.log("Um cliente se conectou!", socket.id);
+
+  socket.on("adicionar_documento", async (nome) => {
+    const documentoExiste = await (encontrarDocumento(nome)) !== null;
+
+    if (documentoExiste) { 
+      socket.emit("documento_existente", nome);
+    } else {
+      const resultado = await adicionarDocumento(nome);
+  
+       if (resultado.acknowledged) {
+          io.emit("adicionar_documento_interface", nome);
+      }
+    }
+
+  });
+
+  socket.on("obter_documentos", async (devolverDocumentos) => {
+    const documentos = await obterDocumentos();
+    
+    devolverDocumentos(documentos);
+  });
+
+
+  //console.log("Um cliente se conectou!", socket.id);
 
   // Versão 1 com o emit diretamente
   // socket.on("selecionar_documento", (nomeDocumento) => {
@@ -34,7 +57,7 @@ io.on("connection", (socket) => {
   // });
 
   // Versão 2 com o callback (devolverTexto)
-    socket.on("selecionar_documento", async (nomeDocumento, devolverTexto) => {
+  socket.on("selecionar_documento", async (nomeDocumento, devolverTexto) => {
     // criando as salas
     socket.join(nomeDocumento);
     
@@ -60,7 +83,14 @@ io.on("connection", (socket) => {
       // emite apenas para a sala
       socket.to(nomeDocumento).emit ("texto_editor_clientes", texto);
     }
+  });
 
+  socket.on("excluir_documento", async (nomeDocumento) => {
+    const resultado = await excluirDocumento(nomeDocumento);
+    
+    if (resultado.modifiedCount) {
+      io.emit("excluir_documento_interface", nomeDocumento);
+    }
   });
 });
 

@@ -28,4 +28,8 @@ socket.on("disconnect", (motivo) => {
   Motivo: ${motivo}`);
 });
 
-export { emitirTextoEditor, selecionarDocumento };
+function emitirExcluirDocumento(nome) {
+  socket.emit("excluir_documento", nome);
+}
+
+export { emitirTextoEditor, selecionarDocumento, emitirExcluirDocumento };

@@ -1,6 +1,10 @@
 import { MongoClient } from 'mongodb';
 
-const uri = 'mongodb://admin:admin@localhost:27017/';
+// Notebook TJ
+//const uri = 'mongodb://admin:admin@localhost:27017/';
+
+// Notebook casa
+const uri = 'mongodb://localhost:27017/';
 
 let db = null;
 

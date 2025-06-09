@@ -1,5 +1,31 @@
 import { getDocumentosColecao } from "./dbConnect.js";
 
+function adicionarDocumento(nome) {
+  const documentosColecao = getDocumentosColecao();
+
+  const resultado = documentosColecao.insertOne(
+    {
+      nome: nome,
+      texto: ""
+    }
+  );
+  return resultado;
+}
+
+function obterDocumentos() {
+  const documentosColecao = getDocumentosColecao();
+  
+  // Obtém todos os documentos da coleção
+  const documentos = documentosColecao.find().toArray();
+  
+  if (!documentos || documentos.length === 0) {
+    console.error("Nenhum documento encontrado.");
+    return [];
+  }
+
+  return documentos;
+}
+
 function encontrarDocumento(nome) {
   const documento = getDocumentosColecao().findOne({ nome: nome });
   if (!documento) {
@@ -29,4 +55,18 @@ function atualizaDocumento(nomeDocumento, texto) {
   return atualizacao;
 }
 
-export { encontrarDocumento, atualizaDocumento };
+function excluirDocumento(nome) {
+  const documentosColecao = getDocumentosColecao();
+  
+  // Exclui o documento do banco de dados
+  const resultado = documentosColecao.deleteOne({ nome: nome });
+
+  if (resultado.deletedCount === 0) {
+    console.error(`Erro ao excluir o documento "${nome}".`);
+    return null;
+  }
+
+  return resultado;
+}
+
+export { encontrarDocumento, atualizaDocumento, obterDocumentos, adicionarDocumento, excluirDocumento };
