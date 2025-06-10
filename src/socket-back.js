@@ -88,8 +88,8 @@ io.on("connection", (socket) => {
   socket.on("excluir_documento", async (nomeDocumento) => {
     const resultado = await excluirDocumento(nomeDocumento);
     
-    if (resultado.modifiedCount) {
-      io.emit("excluir_documento_interface", nomeDocumento);
+    if (resultado.deletedCount) {
+      io.emit("excluir_documento_sucesso", nomeDocumento);
     }
   });
 });

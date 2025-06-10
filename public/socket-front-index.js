@@ -1,4 +1,4 @@
-import { inserirLinkDocumento } from "./index.js";
+import { inserirLinkDocumento, removerLinkDocumento } from "./index.js";
 
 
 const socket = io();
@@ -15,6 +15,10 @@ socket.emit("obter_documentos", (documentos) => {
     documentos.forEach((documento) => {
         inserirLinkDocumento(documento.nome);
     });
+});
+
+socket.on("excluir_documento_sucesso", (nome) => {
+  removerLinkDocumento(nome);
 });
 
 function emitirAdicionarDocumento(nome) {
